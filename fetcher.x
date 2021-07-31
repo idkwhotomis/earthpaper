@@ -1,14 +1,13 @@
 #import "fetcher.h"
 #import <Foundation/Foundation.h>
-
-int width = 550;
-int height = 550;
-int scale = 4;
-int offset = 6000; //5000 normal
+#import "Tweak.h"
 
 UIImage* getImageFromURL(NSString* urlstring){
     NSURL *url = [NSURL URLWithString:urlstring];
     NSData *data = [NSData dataWithContentsOfURL:url];
+    if (!data){
+        return nil;
+    }
     UIImage *img = [[UIImage alloc] initWithData:data];
     return img;
 }
@@ -63,11 +62,18 @@ UIImage* getCurrentImage(){
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenRect.size.width;
     CGFloat screenHeight = screenRect.size.height;
+    if (screenHeight<screenWidth){
+        // swap values
+        NSLog(@"swapping height, width");
+        screenWidth = screenWidth + screenHeight; // 1+2 =3
+        screenHeight = screenWidth - screenHeight; // 3 -2 = 1
+        screenWidth = screenWidth - screenHeight; // 3-1 = 2;
+    }
     CGFloat screenScale = [[UIScreen mainScreen] scale];
-    int width = (int)(screenWidth*screenScale); 
-    int height = (int)(screenHeight*screenScale); 
-    NSLog(@"%i",width);
-    NSLog(@"%i",height);
+    int localwidth = (int)(screenWidth*screenScale); 
+    int localheight = (int)(screenHeight*screenScale); 
+    NSLog(@"%i",localwidth);
+    NSLog(@"%i",localheight);
     CFAbsoluteTime time = CFAbsoluteTimeGetCurrent()+978307200- offset;
     NSArray* Tiles = getTilesForTime(time);
     if (!Tiles) return nil;
@@ -90,7 +96,7 @@ UIImage* getCurrentImage(){
 
     UIGraphicsEndImageContext(); 
     
-    CGSize imageSize = CGSizeMake(width,height);
+    CGSize imageSize = CGSizeMake(localwidth,localheight);
     UIColor *fillColor = [UIColor blackColor];
     UIGraphicsBeginImageContext(imageSize);
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -99,9 +105,14 @@ UIImage* getCurrentImage(){
     //UIImage *baseimg = UIGraphicsGetImageFromCurrentImageContext();
     //[baseimg drawInRect:CGRectMake(0, 0, 1125, 2436)];
 
-    [uncroppedimage drawInRect:CGRectMake(0, height/2 -width/2 + height/9, width, width)];
+    [uncroppedimage drawInRect:CGRectMake(0, localheight/2 -localwidth/2 + localheight/9, localwidth, localwidth)];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+
+    // Save image.
+    [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
     UIGraphicsEndImageContext();
     return image;
 }

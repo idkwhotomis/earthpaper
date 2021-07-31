@@ -15,3 +15,4 @@ earthpaper_CFLAGS = -fobjc-arc
 earthpaper_FRAMEWORKS = UIKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+include $(THEOS_MAKE_PATH)/aggregate.mk
