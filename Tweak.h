@@ -3,7 +3,7 @@
 #import <dlfcn.h>
 #import <objc/runtime.h>
 #import "fetcher.h"
-#import "setWallpaper.h"
+
 
 extern int width;
 extern int height;
