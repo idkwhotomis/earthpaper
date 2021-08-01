@@ -1,10 +1,3 @@
-
-#import <stdio.h>
-#import <string.h>
-#import <dlfcn.h>
-#import <objc/runtime.h>
-#import "fetcher.h"
-#import "setWallpaper.h"
 #import "Tweak.h"
 
 BOOL enabled;
@@ -14,27 +7,18 @@ int scale;
 int offset; //5000 normal
 int delta; 
 UIImage* currentwallpaper = nil;
+BOOL lockscreenEnabled = YES;
+BOOL homescreenEnabled = YES;
+BOOL dimEnabled = YES;
 
 
-@interface SBFWallpaperView : UIView
-@property (nonatomic,readonly) UIImage * wallpaperImage;
-@property (nonatomic,retain) UIImage * untreatedWallpaperImage;   
-@property (nonatomic,retain) UIView * contentView;//@synthesize untreatedWallpaperImage=_untreatedWallpaperImage - In the implementation block
-@end
+UIImageView *wallpaperImageViewLS = nil;      //image view used for the lockscreen
+UIImageView *wallpaperImageViewHS = nil;      //image view used for the homescreen
 
-CGRect getFrameSize(){ 
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    CGFloat screenWidth = screenRect.size.width;
-    CGFloat screenHeight = screenRect.size.height;
-    if (screenHeight<screenWidth){
-        // swap values
-        NSLog(@"swapping height, width");
-        screenWidth = screenWidth + screenHeight; // 1+2 =3
-        screenHeight = screenWidth - screenHeight; // 3 -2 = 1
-        screenWidth = screenWidth - screenHeight; // 3-1 = 2;
-    }
-    return CGRectMake(0, 0, screenWidth, screenHeight);
-}
+UIView* dimBlurViewLS = nil;                  //dimBlurViewLS is a combination of both the the dimViewLS and blurViewLS
+UIView* dimViewLS = nil;                      //dim blur
+UIVisualEffectView* blurViewLS = nil;         //blur view
+UIBlurEffect* blurLS = nil;                   //blur effect to be used on blurViewLS
 
 
 %hook SpringBoard
@@ -59,13 +43,14 @@ CGRect getFrameSize(){
 
 
 -(void)applicationDidFinishLaunching:(id)arg1 {
-    %orig;
-    if (!enabled) return;
+    if (!enabled) return %orig;
     NSData *currentwallpaperdata = [[NSUserDefaults standardUserDefaults]  objectForKey:@"com.idkwhotomis.earthpaperobjc.wallpapercurrent"];
     if (currentwallpaperdata){
         currentwallpaper = [[UIImage alloc] initWithData:currentwallpaperdata];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"com.idkwhotomis.earthpaperobjc.setwallpaper" object:nil];
     }
+
+    %orig;
     //[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"com.idkwhotomis.earthpaperobjc.timeatlastupdate"];
     [[NSUserDefaults standardUserDefaults] synchronize];   
     if ((![[NSUserDefaults standardUserDefaults] objectForKey:@"com.idkwhotomis.earthpaperobjc.timeatlastupdate"]) || 
@@ -74,51 +59,15 @@ CGRect getFrameSize(){
     }else{
         float time = (delta - (CFAbsoluteTimeGetCurrent()-((NSNumber*)[[NSUserDefaults standardUserDefaults] objectForKey:@"com.idkwhotomis.earthpaperobjc.timeatlastupdate"]).intValue));
         NSLog(@"updating in %f seconds", time);
-        [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerFired) userInfo:nil repeats:NO];
+        [NSTimer scheduledTimerWithTimeInterval:time target:self selector:@selector(timerFired) userInfo:nil repeats:NO];
     }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"getDNDState" object:nil];
     
 }
-
-
 %end
 
 
-
-%hook SBFWallpaperView
-- (void)insertSubview:(UIImageView *)arg1 atIndex:(NSInteger)index{
-    if ([arg1 isKindOfClass:[UIImageView class]] && enabled){
-        [[NSNotificationCenter defaultCenter] addObserver:arg1 selector:@selector(updateimage) name:@"com.idkwhotomis.earthpaperobjc.setwallpaper" object:nil]; 
-        if (currentwallpaper){
-            arg1.frame = getFrameSize();
-            arg1.image = currentwallpaper;
-        }
-        %orig;
-    }
-    else %orig;
-}
-
--(void)addSubview:(UIImageView *)arg1{
-    if ([arg1 isKindOfClass:[UIImageView class]] && enabled){
-        [[NSNotificationCenter defaultCenter] addObserver:arg1 selector:@selector(updateimage) name:@"com.idkwhotomis.earthpaperobjc.setwallpaper" object:nil]; 
-        if (currentwallpaper) {
-            arg1.frame = getFrameSize();
-            arg1.image = currentwallpaper;
-        }
-        %orig;
-    }
-    else %orig;
-}
-%end
-
-%hook UIImageView
-%new
--(void) updateimage{
-    if (currentwallpaper && enabled){
-        self.frame = getFrameSize();
-        self.image = currentwallpaper;
-    }
-}
-%end
 
 
 
