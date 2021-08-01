@@ -9,7 +9,6 @@
 
 //%hook SBWallpaperViewController
 //- (void)viewWillAppear:(BOOL)animated {
-//    NSLog(@"pogchamp");
 //    if (currentwallpaper){
 //        [self view].hidden = YES;
 //    }
@@ -31,7 +30,6 @@
 %hook SBIconController
 
 - (void)viewDidLoad {
-    NSLog(@"idk lol what");
     %orig;
 
     //backdrop = [[CustomClass alloc] initWithFrame:[[[[self view] superview] superview] bounds]];
@@ -50,13 +48,9 @@
     [wallpaperImageViewHS setContentMode:UIViewContentModeScaleAspectFill];
     [wallpaperImageViewHS setClipsToBounds:YES];
     [[self view] insertSubview:wallpaperImageViewHS atIndex:1];
-    
-
-    NSLog(@"idk lol what");
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"pog");
     %orig;
     if (currentwallpaper) {	//if the cache image has an image linked to it
         
