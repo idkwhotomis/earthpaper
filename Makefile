@@ -10,7 +10,7 @@ TWEAK_NAME = earthpaper
 
 earthpaper_PRIVATE_FRAMEWORKS = SpringBoardFoundation SpringBoardUIServices
 
-earthpaper_FILES = Tweak.x fetcher.x setWallpaper.m LockScreenHooks.x HomeScreenHooks.x
+earthpaper_FILES = Tweak.x fetcher.x LockScreenHooks.x HomeScreenHooks.x
 earthpaper_CFLAGS = -fobjc-arc
 earthpaper_FRAMEWORKS = UIKit
 
