@@ -1,6 +1,6 @@
 Package: com.idkwhotomis.earthpaperobjc
 Name: earthpaper
-Version: 0.0.1
+Version: 0.1.b1
 Architecture: iphoneos-arm
 Description: An awesome MobileSubstrate tweak!
 Maintainer: Tom
