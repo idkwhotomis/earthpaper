@@ -42,6 +42,11 @@ BOOL isDNDActive;
 
     //add the view to the actual screen
     [[self view] insertSubview:wallpaperImageViewLS atIndex:0];
+    [self refreshWall];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(refreshWall) 
+                                                 name:@"com.idkwhotomis.earthpaperobjc.setwallpaper"
+                                               object:nil];
 
 
 
@@ -59,6 +64,14 @@ BOOL isDNDActive;
     }
 }
 
+%new
+-(void)refreshWall{
+    if (currentwallpaper) {	//if the cache image has an image linked to it 
+        [wallpaperImageViewLS setImage:currentwallpaper];
+    } else { //if it doesn't, set image view to nothing
+        [wallpaperImageViewLS setImage:nil];
+    }
+}
 %end
 
 //detect when Do Not Disturb is active

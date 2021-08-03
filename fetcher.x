@@ -93,7 +93,7 @@ UIImage* getCurrentImage(){
         }
     }
     UIImage *uncroppedimage = UIGraphicsGetImageFromCurrentImageContext();
-
+    NSLog(@"%@",uncroppedimage);
     UIGraphicsEndImageContext(); 
     
     CGSize imageSize = CGSizeMake(localwidth,localheight);
@@ -108,11 +108,12 @@ UIImage* getCurrentImage(){
     [uncroppedimage drawInRect:CGRectMake(0, localheight/2 -localwidth/2 + localheight/9, localwidth, localwidth)];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+    //NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    //NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
 
     // Save image.
-    [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
+    //[UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
     UIGraphicsEndImageContext();
+    NSLog(@"returning image");
     return image;
 }

@@ -9,8 +9,9 @@ extern int width;
 extern int height;
 extern int scale;
 extern int offset;
+extern BOOL enabled;
 @interface CSCoverSheetViewController : UIViewController 
-
+-(void)refreshWall;
 @end
 
 @interface SBDashBoardViewController : UIViewController 
@@ -18,7 +19,7 @@ extern int offset;
 @end
 
 @interface SBIconController : UIViewController
-- (void)updateWallpaper;
+-(void)refreshWall;
 @end
 
 @interface DNDState : UIViewController

@@ -18,7 +18,7 @@
 
 %hook SBWallpaperImage
 + (id)alloc {
-    if (currentwallpaper){
+    if (enabled){
         return nil;
     }
     return %orig;
@@ -48,12 +48,25 @@
     [wallpaperImageViewHS setContentMode:UIViewContentModeScaleAspectFill];
     [wallpaperImageViewHS setClipsToBounds:YES];
     [[self view] insertSubview:wallpaperImageViewHS atIndex:1];
+    [self refreshWall];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(refreshWall) 
+                                                 name:@"com.idkwhotomis.earthpaperobjc.setwallpaper"
+                                               object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     %orig;
-    if (currentwallpaper) {	//if the cache image has an image linked to it
-        
+    if (currentwallpaper) {	//if the cache image has an image linked to it 
+        [wallpaperImageViewHS setImage:currentwallpaper];
+    } else { //if it doesn't, set image view to nothing
+        [wallpaperImageViewHS setImage:nil];
+    }
+}
+
+%new
+-(void)refreshWall{
+    if (currentwallpaper) {	//if the cache image has an image linked to it 
         [wallpaperImageViewHS setImage:currentwallpaper];
     } else { //if it doesn't, set image view to nothing
         [wallpaperImageViewHS setImage:nil];
