@@ -1,8 +1,17 @@
 #import "Tweak.h"
 
+// CSScrollview - 6
+// UIView - 5
 
+
+
+@interface SBWallpaperViewController : UIViewController 
+
+-(void)refreshWall;
+@end
 
 BOOL isDNDActive;
+
 %hook CSCoverSheetViewController
 
 - (void)viewDidLoad {
